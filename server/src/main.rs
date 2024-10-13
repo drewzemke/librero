@@ -54,12 +54,11 @@ fn generate_openapi_json() {
 async fn main() {
     generate_openapi_json();
 
-    let serve_dir = ServeDir::new("assets");
+    let assets_dir = ServeDir::new("assets");
     let app = Router::new()
-        .route("/", get(|| async { "Ohhhh, hello!" }))
+        .nest_service("/", assets_dir)
         .route("/api/libros", get(get_libros))
-        .route("/api", get(|| async { "Heyyy look an API!" }))
-        .nest_service("/assets", serve_dir);
+        .route("/api", get(|| async { "Heyyy look an API!" }));
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:4000").await.unwrap();
 
