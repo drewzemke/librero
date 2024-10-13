@@ -1,0 +1,59 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "librero-server",
+    "description": "",
+    "license": {
+      "name": ""
+    },
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/libros": {
+      "get": {
+        "tags": [
+          "crate"
+        ],
+        "operationId": "get_libros",
+        "responses": {
+          "200": {
+            "description": "Todos los libros",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Libro"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Libro": {
+        "type": "object",
+        "required": [
+          "isbn",
+          "title",
+          "author"
+        ],
+        "properties": {
+          "author": {
+            "type": "string"
+          },
+          "isbn": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

@@ -9,5 +9,5 @@ run-server:
     cd server && watchexec -c -w src -w Cargo.toml -r "cargo run --quiet"
 
 run-client:
-    cd client && npm run dev
+    cd client && pnpm run dev
     
