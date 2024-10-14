@@ -1,59 +1,9 @@
-use std::fs;
-
-use axum::{routing::get, Json, Router};
-use serde::{Deserialize, Serialize};
+use axum::{routing::get, Router};
+use librero_server::libros::get_libros;
 use tower_http::services::ServeDir;
-use utoipa::{OpenApi, ToSchema};
-
-#[derive(Serialize, Deserialize, ToSchema)]
-struct Libro {
-    isbn: String,
-    title: String,
-    author: String,
-}
-
-#[utoipa::path(
-    get,
-    path = "/libros",
-    responses(
-        (status = 200, description = "Todos los libros", body = Vec<Libro>)
-    )
-)]
-async fn get_libros() -> Json<Vec<Libro>> {
-    Json(vec![
-        Libro {
-            isbn: "fake_isbn_1".to_string(),
-            title: "Fake Libro 1".to_string(),
-            author: "Fake Author 1".to_string(),
-        },
-        Libro {
-            isbn: "fake_isbn_2".to_string(),
-            title: "Fake Libro 2".to_string(),
-            author: "Fake Author 2".to_string(),
-        },
-        Libro {
-            isbn: "fake_isbn_3".to_string(),
-            title: "Fake Libro 3".to_string(),
-            author: "Fake Author 3".to_string(),
-        },
-    ])
-}
-
-#[derive(OpenApi)]
-#[openapi(paths(get_libros), components(schemas(Libro)))]
-struct ApiDoc;
-
-fn generate_openapi_json() {
-    let openapi = ApiDoc::openapi();
-    let json = serde_json::to_string_pretty(&openapi).unwrap();
-    fs::write("../openapi.json", json).expect("Unable to write file");
-    println!("OpenAPI JSON file generated: openapi.json");
-}
 
 #[tokio::main]
 async fn main() {
-    generate_openapi_json();
-
     let assets_dir = ServeDir::new("assets");
     let app = Router::new()
         .nest_service("/", assets_dir)

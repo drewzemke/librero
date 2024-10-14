@@ -10,4 +10,7 @@ run-server:
 
 run-client:
     cd client && pnpm run dev
-    
+
+api-gen:
+    cd server && cargo run --bin api-gen
+    cd client && pnpm run api-gen
