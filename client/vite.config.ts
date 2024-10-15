@@ -25,6 +25,9 @@ export default defineConfig({
       "/api": {
         target: "http://localhost:4000",
       },
+      "/covers": {
+        target: "http://localhost:4000",
+      },
     },
   },
 });

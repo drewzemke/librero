@@ -4,6 +4,7 @@
 /* eslint-disable */
 export type Libro = {
     author: string;
+    cover_path: string;
     isbn: string;
     title: string;
 };

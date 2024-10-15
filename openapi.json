@@ -40,10 +40,14 @@
         "required": [
           "isbn",
           "title",
-          "author"
+          "author",
+          "cover_path"
         ],
         "properties": {
           "author": {
+            "type": "string"
+          },
+          "cover_path": {
             "type": "string"
           },
           "isbn": {

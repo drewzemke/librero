@@ -4,13 +4,9 @@ import "./App.css";
 import { Libro } from "./api";
 
 function App() {
-  const [apiStuff, setApiStuff] = useState("");
   const [libros, setLibros] = useState<Libro[]>([]);
 
   useEffect(() => {
-    fetch("/api")
-      .then((data) => data.text())
-      .then((text) => setApiStuff(text));
     fetch("/api/libros")
       .then((data) => data.json())
       .then((data) => setLibros(data));
@@ -18,19 +14,39 @@ function App() {
 
   return (
     <>
-      <h1>📚 Librero! 📚</h1>
-      <p className="read-the-docs">Aquí están tus libros:</p>
-      {libros.length > 0 && (
-        <ul>
-          {libros.map((libro) => (
-            <li>
-              {libro.isbn}: {libro.title} por {libro.author}
-            </li>
-          ))}
-        </ul>
-      )}
-      <p className="read-the-docs">Here's the result of the call to "/api":</p>
-      {apiStuff && <p>{apiStuff}</p>}
+      <h1 className="bg-dark header">Librero</h1>
+      <div className="bg-light container two-columns">
+        {libros.length > 0 && (
+          <ul className="libro-list">
+            {libros.map((libro) => (
+              <li key={libro.isbn} className="libro-item">
+                <img src={libro.cover_path} />
+                <span className="title">{libro.title}</span>
+                <span className="author">{libro.author}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+        <h2>Featured</h2>
+      </div>
+      <div className="bg-medium container two-columns">
+        <h2>Search</h2>
+        <input />
+      </div>
+      <div className="bg-light container two-columns">
+        {libros.length > 0 && (
+          <ul className="libro-list">
+            {libros.map((libro) => (
+              <li key={libro.isbn} className="libro-item">
+                <img src={libro.cover_path} />
+                <span className="title">{libro.title}</span>
+                <span className="author">{libro.author}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+        <h2>Recent Additions</h2>
+      </div>
     </>
   );
 }

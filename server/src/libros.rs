@@ -7,6 +7,7 @@ pub struct Libro {
     isbn: String,
     title: String,
     author: String,
+    cover_path: String,
 }
 
 #[utoipa::path(
@@ -19,19 +20,22 @@ pub struct Libro {
 pub async fn get_libros() -> Json<Vec<Libro>> {
     Json(vec![
         Libro {
-            isbn: "fake_isbn_1".to_string(),
-            title: "Fake Libro 1".to_string(),
-            author: "Fake Author 1".to_string(),
+            isbn: "9780525620792".to_string(),
+            title: "Mexican Gothic 1".to_string(),
+            author: "Silvia Moreno-Garcia".to_string(),
+            cover_path: "covers/53117768.jpg".to_string(),
         },
         Libro {
-            isbn: "fake_isbn_2".to_string(),
-            title: "Fake Libro 2".to_string(),
-            author: "Fake Author 2".to_string(),
+            isbn: "9780525620792".to_string(),
+            title: "Mexican Gothic 2".to_string(),
+            author: "Silvia Moreno-Garcia".to_string(),
+            cover_path: "covers/53117768.jpg".to_string(),
         },
         Libro {
-            isbn: "fake_isbn_3".to_string(),
-            title: "Fake Libro 3".to_string(),
-            author: "Fake Author 3".to_string(),
+            isbn: "9780525620792".to_string(),
+            title: "Mexican Gothic 3".to_string(),
+            author: "Silvia Moreno-Garcia".to_string(),
+            cover_path: "covers/53117768.jpg".to_string(),
         },
     ])
 }
