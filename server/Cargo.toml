@@ -19,3 +19,7 @@ path = "src/main.rs"
 [[bin]]
 name = "api-gen"
 path = "src/bin/api_gen.rs"
+
+[[bin]]
+name = "e2e"
+path = "src/bin/e2e.rs"

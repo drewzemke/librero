@@ -16,4 +16,4 @@ api-gen:
     cd client && pnpm run api-gen
 
 e2e:
-    cd e2e && pnpm run test
+    - cd server && cargo run --bin e2e
