@@ -7,20 +7,17 @@ git fetch origin main
 
 if test (git rev-list HEAD..origin/main --count) -gt 0; or test "$argv[1]" = "--force" 
     echo "New changes found. Pulling and deploying..."
-
     git pull origin main
 
-    # build server
     # TODO other checks?
+    echo "Running checks..."
     cd server
     cargo test
 
+    echo "Starting server in Docker..."
     cd ..
-    # TODO: integrate with docker-compose?
-    docker build -t librero-server .
-    docker stop librero-server
-    docker rm librero-server
-    docker run -d --name librero-server -p 4000:4000 librero-server
+    docker build -t librero .
+    docker compose -f /home/drew/services/docker-compose.yaml up -d
 
     echo "All done!"
 else 
