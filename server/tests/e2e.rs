@@ -1,12 +1,54 @@
 // #[cfg(feature = "e2e_tests")]
 // #[cfg(test)]
 mod e2e {
+    use dotenv::dotenv;
     use librero_server::create_app;
     use sqlx::PgPool;
     use tokio::sync::oneshot;
+    use uuid::Uuid;
 
-    #[sqlx::test]
-    async fn run_e2e_tests(pool: PgPool) {
+    async fn create_test_database() -> (PgPool, String) {
+        let master_db_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+
+        println!("{master_db_url}");
+
+        let master_pool = PgPool::connect(&master_db_url).await.unwrap();
+
+        let db_id = Uuid::new_v4().to_string().replace("-", "");
+        let db_name = format!("librero_{}", db_id);
+        sqlx::query(&format!("CREATE DATABASE {}", db_name))
+            .execute(&master_pool)
+            .await
+            .unwrap();
+
+        let test_db_url = format!("{}_{}", master_db_url, db_id);
+        let test_pool = PgPool::connect(&test_db_url).await.unwrap();
+
+        // Run migrations
+        sqlx::migrate!("./migrations")
+            .run(&test_pool)
+            .await
+            .expect("Failed to migrate the database");
+
+        (test_pool, db_name)
+    }
+
+    async fn drop_test_database(db_name: &str) {
+        let master_db_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+        let master_pool = PgPool::connect(&master_db_url).await.unwrap();
+
+        sqlx::query(&format!("DROP DATABASE {}", db_name))
+            .execute(&master_pool)
+            .await
+            .unwrap();
+    }
+
+    #[tokio::test]
+    async fn run_e2e_tests() {
+        dotenv().ok();
+
+        let (pool, db_name) = create_test_database().await;
+
         let (tx, rx) = oneshot::channel::<()>();
         let app = create_app(pool.clone());
         let listener = tokio::net::TcpListener::bind("0.0.0.0:4001").await.unwrap();
@@ -26,10 +68,10 @@ mod e2e {
 
         println!("Starting client");
         let vite_handle = tokio::task::spawn_blocking(move || {
-            std::process::Command::new("pnpm")
-                .arg("-C")
+            std::process::Command::new("deno")
+                .arg("task")
+                .arg("--cwd")
                 .arg("../client")
-                .arg("run")
                 .arg("dev")
                 .env("VITE_SERVER_PORT", "4001")
                 .env("VITE_CLIENT_PORT", "6001")
@@ -39,10 +81,10 @@ mod e2e {
 
         println!("Running tests");
         let test_handle = tokio::task::spawn_blocking(move || {
-            let status = std::process::Command::new("pnpm")
-                .arg("-C")
+            let status = std::process::Command::new("deno")
+                .arg("task")
+                .arg("--cwd")
                 .arg("../e2e")
-                .arg("run")
                 .arg("test")
                 .env("CLIENT_PORT", "6001")
                 .status()
@@ -67,5 +109,9 @@ mod e2e {
 
         println!("Waiting for server to gracefully shutdown");
         let _ = server_handle.await;
+
+        println!("Cleaning up db");
+        pool.close().await;
+        drop_test_database(&db_name).await;
     }
 }
