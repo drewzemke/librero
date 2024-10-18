@@ -9,11 +9,11 @@ run-server:
     cd server && watchexec -c -w src -w Cargo.toml -r "cargo run --quiet"
 
 run-client:
-    cd client && pnpm run dev
+    cd client && deno task dev
 
 api-gen:
     cd server && cargo run --bin api-gen
-    cd client && pnpm run api-gen
+    cd client && deno task api-gen
 
 e2e:
     - cd server && cargo test --features e2e_tests -- --nocapture
