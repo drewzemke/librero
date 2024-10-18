@@ -16,4 +16,4 @@ api-gen:
     cd client && pnpm run api-gen
 
 e2e:
-    - cd server && cargo run --bin e2e
+    - cd server && cargo test --features e2e_tests -- --nocapture

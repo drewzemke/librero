@@ -7,6 +7,7 @@ export { CancelablePromise, CancelError } from './core/CancelablePromise';
 export { OpenAPI } from './core/OpenAPI';
 export type { OpenAPIConfig } from './core/OpenAPI';
 
+export type { AddLibro } from './models/AddLibro';
 export type { Libro } from './models/Libro';
 
 export { CrateService } from './services/CrateService';

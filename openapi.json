@@ -30,25 +30,67 @@
             }
           }
         }
+      },
+      "post": {
+        "tags": [
+          "crate"
+        ],
+        "operationId": "add_libro",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddLibro"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Libro successfully added",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Libro"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          }
+        }
       }
     }
   },
   "components": {
     "schemas": {
+      "AddLibro": {
+        "type": "object",
+        "required": [
+          "isbn"
+        ],
+        "properties": {
+          "isbn": {
+            "type": "string"
+          }
+        }
+      },
       "Libro": {
         "type": "object",
         "required": [
           "isbn",
           "title",
-          "author",
-          "cover_path"
+          "author"
         ],
         "properties": {
           "author": {
             "type": "string"
           },
           "cover_path": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "isbn": {
             "type": "string"
