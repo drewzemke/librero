@@ -1,4 +1,4 @@
-run:
+start:
     #!/usr/bin/env bash
     trap 'kill 0' SIGINT;
     (just run-client) & 
@@ -16,4 +16,4 @@ api-gen:
     cd client && deno task api-gen
 
 e2e:
-    - cd server && cargo test --features e2e_tests -- --nocapture
+    - cd e2e && deno task test

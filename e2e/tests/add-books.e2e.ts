@@ -1,8 +1,9 @@
-import { test, expect } from "@playwright/test";
+import { expect } from "@playwright/test";
+import { test } from "../utils/test-fixtures";
 
-test("add a book to collection", async ({ page }) => {
-  const url = `http://localhost:${process.env.CLIENT_PORT}/`;
-  console.log(url);
+test("add a book to collection", async ({ page, clientPort }) => {
+  const url = `http://localhost:${clientPort}/`;
+  console.log("navigating to:", url);
 
   await page.goto(url);
   await expect(page.getByRole("heading", { name: "Librero" })).toBeVisible();
