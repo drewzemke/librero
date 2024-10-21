@@ -5,15 +5,11 @@ use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 use std::{
     collections::HashMap,
-    net::TcpStream,
-    process::Child,
     sync::{Arc, Mutex},
-    time::Duration,
 };
 use tokio::{
     sync::oneshot::{self, Sender},
     task::JoinHandle,
-    time::sleep,
 };
 
 #[derive(Debug, Deserialize)]
@@ -32,7 +28,6 @@ struct TestResponse {
 struct TestRun {
     kill_server: Sender<()>,
     server_handle: JoinHandle<()>,
-    client_handle: JoinHandle<Child>,
 }
 
 #[derive(Clone)]
@@ -65,8 +60,6 @@ async fn setup_test(
     // choose ports to spin up the server/client on
     // TODO: ... randomly?
     let server_port = 4001;
-    let client_port = 6001;
-
     // spin up the server
     let (tx, rx) = oneshot::channel::<()>();
     let app = create_app(test_pool.clone());
@@ -84,20 +77,6 @@ async fn setup_test(
             .unwrap();
     });
 
-    println!("Starting client");
-    let client_handle = tokio::task::spawn_blocking(move || {
-        std::process::Command::new("deno")
-            .arg("task")
-            .arg("--cwd")
-            .arg("../client")
-            .arg("dev")
-            .env("VITE_SERVER_PORT", server_port.to_string())
-            .env("VITE_CLIENT_PORT", client_port.to_string())
-            .spawn()
-            .expect("Failed to start Vite")
-    });
-    wait_for_server(client_port, 5).await.unwrap();
-
     // store data in state
     let mut runs = state.runs.lock().unwrap();
     runs.insert(
@@ -105,11 +84,12 @@ async fn setup_test(
         TestRun {
             kill_server: tx,
             server_handle,
-            client_handle,
         },
     );
 
-    Json(TestResponse { client_port })
+    Json(TestResponse {
+        client_port: server_port,
+    })
 }
 
 #[debug_handler]
@@ -122,13 +102,6 @@ async fn teardown_test(
         runs.remove(&body.test_id).expect("couldn't find test data")
     };
     println!("Tearing down test for ID: {}", body.test_id);
-
-    println!("Stopping Client");
-    let mut client_process = run_data.client_handle.await.expect("Vite task panicked");
-    client_process.kill().expect("Failed to kill Vite process");
-    client_process
-        .wait()
-        .expect("Failed to wait for Vite process to exit");
 
     println!("Telling server to shutdown");
     let _ = run_data.kill_server.send(());
@@ -172,21 +145,4 @@ async fn drop_test_database(test_id: String, pool: PgPool) {
         .execute(&pool)
         .await
         .unwrap();
-}
-
-async fn wait_for_server(port: u16, max_attempts: u32) -> Result<(), Box<dyn std::error::Error>> {
-    let addr = format!("127.0.0.1:{}", port);
-    let mut attempts = 0;
-
-    while attempts < max_attempts {
-        match TcpStream::connect(&addr) {
-            Ok(_) => return Ok(()),
-            Err(_) => {
-                attempts += 1;
-                sleep(Duration::from_secs(1)).await;
-            }
-        }
-    }
-
-    Err("Server did not start in time".into())
 }
