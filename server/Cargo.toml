@@ -12,7 +12,9 @@ serde = { version = "1.0.210", features = ["derive"] }
 serde_json = "1.0.128"
 sqlx = { version = "0.8.2", features = ["runtime-tokio-native-tls", "postgres"] }
 tokio = { version = "1.40.0", features = ["full"] }
-tower-http = { version = "0.6.1", features = ["fs"] }
+tower-http = { version = "0.6.1", features = ["fs", "trace"] }
+tracing = "0.1.40"
+tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
 utoipa = { version = "4.2.3", features = ["axum_extras"] }
 uuid = { version = "1.11.0", features = ["v4"] }
 

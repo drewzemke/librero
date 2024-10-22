@@ -1,7 +1,7 @@
 # todo
 
 ## set up tracing 
-- [ ] print better server logs 
+- [x] print better server logs 
 - [ ] remove `println!` logs
 
 ## user scenarios

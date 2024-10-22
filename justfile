@@ -2,7 +2,7 @@ start:
     #!/usr/bin/env bash
     trap 'kill 0' SIGINT;
     (just run-client) & 
-    (just run-server) & 
+    (RUST_LOG=debug just run-server) & 
     wait
 
 run-server:
