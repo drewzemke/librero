@@ -57,18 +57,14 @@ async fn setup_test(
     let (test_pool, db_name) = create_test_database(body.test_id.clone(), state.pool).await;
     println!("Created this db: {db_name}");
 
-    // choose ports to spin up the server/client on
-    // TODO: ... randomly?
-    let server_port = 4001;
     // spin up the server
     let (tx, rx) = oneshot::channel::<()>();
     let app = create_app(test_pool.clone());
-    let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{server_port}"))
-        .await
-        .unwrap();
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:0").await.unwrap();
+    let server_port = listener.local_addr().unwrap().port();
 
     let server_handle = tokio::spawn(async move {
-        println!("Starting server");
+        println!("Starting server on port {server_port}");
         axum::serve(listener, app)
             .with_graceful_shutdown(async {
                 rx.await.ok();

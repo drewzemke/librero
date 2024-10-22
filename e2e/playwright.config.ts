@@ -21,16 +21,22 @@ export default defineConfig({
   reporter: [["list"], ["html", { open: "never" }]],
   timeout: 5000,
   use: { trace: "on-first-retry" },
+  globalSetup: "./utils/global-setup.ts",
 
   projects: [
-    // {
-    //   name: "chromium",
-    //   use: { ...devices["Desktop Chrome"] },
-    // },
+    {
+      name: "Chromium",
+      use: { ...devices["Desktop Chrome"] },
+    },
 
     {
       name: "Mobile Safari",
       use: { ...devices["iPhone 12"] },
     },
+
+    // {
+    //   name: "Safari",
+    //   use: { ...devices["Desktop Safari"] },
+    // },
   ],
 });
