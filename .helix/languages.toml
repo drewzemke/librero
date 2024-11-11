@@ -1,0 +1,26 @@
+[[language]]
+name = "rust"
+auto-format = true
+language-servers = ["rust-analyzer", "lsp-ai-code", "tailwindcss-ls"]
+
+[language.formatter]
+command = "leptosfmt"
+args = ["--stdin", "--rustfmt"]
+
+[language-server.rust-analyzer.config.cargo]
+features = "all"
+
+[language-server.tailwindcss-ls]
+config = { userLanguages = { rust = "html", "*.rs" = "html" } }
+
+[[language]]
+name = "typescript"
+language-servers = ["deno"]
+auto-format = true
+formatter = { command = 'deno', args = ["fmt", "-"] }
+
+[[language]]
+name = "tsx"
+language-servers = ["deno"]
+auto-format = true
+formatter = { command = 'deno', args = ["fmt", "-"] }
