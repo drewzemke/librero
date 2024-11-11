@@ -2,3 +2,4 @@ scripts/deploy.log
 server/test-results
 target
 style/tailwind-out.css
+test-results

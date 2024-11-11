@@ -1,5 +1,5 @@
 import { expect } from "@playwright/test";
-import { test } from "../utils/test-fixtures";
+import { test } from "../utils/test-fixtures.ts";
 
 test("add a book to collection", async ({ page, clientPort }) => {
   const url = `http://localhost:${clientPort}/`;

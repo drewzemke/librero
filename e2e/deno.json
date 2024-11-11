@@ -1,0 +1,10 @@
+{
+  "tasks": {
+    "dev": "deno run --watch main.ts"
+  },
+  "imports": {
+    "@playwright/test": "npm:@playwright/test@^1.48.2",
+    "@std/assert": "jsr:@std/assert@1"
+  },
+  "nodeModulesDir": "auto"
+}

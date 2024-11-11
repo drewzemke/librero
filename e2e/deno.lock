@@ -1,18 +1,32 @@
 {
   "version": "4",
   "specifiers": {
-    "npm:@playwright/test@^1.48.0": "1.48.1",
-    "npm:@types/node@^22.7.5": "22.7.6"
+    "jsr:@std/assert@1": "1.0.7",
+    "jsr:@std/internal@^1.0.5": "1.0.5",
+    "npm:@playwright/test@^1.48.2": "1.48.2",
+    "npm:@types/node@*": "22.5.4",
+    "npm:playwright@*": "1.48.2"
+  },
+  "jsr": {
+    "@std/assert@1.0.7": {
+      "integrity": "64ce9fac879e0b9f3042a89b3c3f8ccfc9c984391af19e2087513a79d73e28c3",
+      "dependencies": [
+        "jsr:@std/internal"
+      ]
+    },
+    "@std/internal@1.0.5": {
+      "integrity": "54a546004f769c1ac9e025abd15a76b6671ddc9687e2313b67376125650dc7ba"
+    }
   },
   "npm": {
-    "@playwright/test@1.48.1": {
-      "integrity": "sha512-s9RtWoxkOLmRJdw3oFvhFbs9OJS0BzrLUc8Hf6l2UdCNd1rqeEyD4BhCJkvzeEoD1FsK4mirsWwGerhVmYKtZg==",
+    "@playwright/test@1.48.2": {
+      "integrity": "sha512-54w1xCWfXuax7dz4W2M9uw0gDyh+ti/0K/MxcCUxChFh37kkdxPdfZDw5QBbuPUJHr1CiHJ1hXgSs+GgeQc5Zw==",
       "dependencies": [
         "playwright"
       ]
     },
-    "@types/node@22.7.6": {
-      "integrity": "sha512-/d7Rnj0/ExXDMcioS78/kf1lMzYk4BZV8MZGTBKzTGZ6/406ukkbYlIsZmMPhcR5KlkunDHQLrtAVmSq7r+mSw==",
+    "@types/node@22.5.4": {
+      "integrity": "sha512-FDuKUJQm/ju9fT/SeX/6+gBzoPzlVCzfzmGkwKvRHQVxi4BntVbyIwf6a4Xn62mrvndLiml6z/UBXIdEVjQLXg==",
       "dependencies": [
         "undici-types"
       ]
@@ -20,11 +34,11 @@
     "fsevents@2.3.2": {
       "integrity": "sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA=="
     },
-    "playwright-core@1.48.1": {
-      "integrity": "sha512-Yw/t4VAFX/bBr1OzwCuOMZkY1Cnb4z/doAFSwf4huqAGWmf9eMNjmK7NiOljCdLmxeRYcGPPmcDgU0zOlzP0YA=="
+    "playwright-core@1.48.2": {
+      "integrity": "sha512-sjjw+qrLFlriJo64du+EK0kJgZzoQPsabGF4lBvsid+3CNIZIYLgnMj9V6JY5VhM2Peh20DJWIVpVljLLnlawA=="
     },
-    "playwright@1.48.1": {
-      "integrity": "sha512-j8CiHW/V6HxmbntOfyB4+T/uk08tBy6ph0MpBXwuoofkSnLmlfdYNNkFTYD6ofzzlSqLA1fwH4vwvVFvJgLN0w==",
+    "playwright@1.48.2": {
+      "integrity": "sha512-NjYvYgp4BPmiwfe31j4gHLa3J7bD2WiBz8Lk2RoSsmX38SVIARZ18VYjxLjAcDsAhA+F4iSEXTSGgjua0rrlgQ==",
       "dependencies": [
         "fsevents",
         "playwright-core"
@@ -35,11 +49,9 @@
     }
   },
   "workspace": {
-    "packageJson": {
-      "dependencies": [
-        "npm:@playwright/test@^1.48.0",
-        "npm:@types/node@^22.7.5"
-      ]
-    }
+    "dependencies": [
+      "jsr:@std/assert@1",
+      "npm:@playwright/test@^1.48.2"
+    ]
   }
 }

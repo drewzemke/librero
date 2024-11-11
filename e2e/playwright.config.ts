@@ -1,4 +1,5 @@
 import { defineConfig, devices } from "@playwright/test";
+import process from "node:process";
 
 /**
  * Read environment variables from file.
@@ -21,7 +22,6 @@ export default defineConfig({
   reporter: [["list"], ["html", { open: "never" }]],
   timeout: 5000,
   use: { trace: "on-first-retry" },
-  globalSetup: "./utils/global-setup.ts",
 
   projects: [
     {
@@ -33,7 +33,6 @@ export default defineConfig({
       name: "Mobile Safari",
       use: { ...devices["iPhone 12"] },
     },
-
     // {
     //   name: "Safari",
     //   use: { ...devices["Desktop Safari"] },
