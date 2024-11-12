@@ -50,6 +50,7 @@ pub fn test_routes(pool: PgPool, leptos_options: LeptosOptions) -> Router {
         .with_state(test_state)
 }
 
+// TODO: replace logs here with tracing
 async fn setup_test(
     State(state): State<TestState>,
     Json(body): Json<TestRequest>,
