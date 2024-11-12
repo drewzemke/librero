@@ -1,4 +1,4 @@
-use home_page::HomePage;
+use home::HomePage;
 use leptos::prelude::*;
 use leptos_meta::{provide_meta_context, MetaTags, Stylesheet, Title};
 use leptos_router::{
@@ -6,7 +6,7 @@ use leptos_router::{
     StaticSegment,
 };
 
-pub mod home_page;
+pub mod home;
 
 pub fn shell(options: LeptosOptions) -> impl IntoView {
     view! {

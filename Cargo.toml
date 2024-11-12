@@ -13,9 +13,11 @@ console_error_panic_hook = "0.1"
 dotenv = "0.15.0"
 http = "1"
 leptos = { version = "0.7.0-rc1", features = ["nightly"] }
+leptos-use = { version = "0.14.0-rc2", features = ["signal_debounced"] }
 leptos_axum = { version = "0.7.0-rc1", optional = true }
 leptos_meta = { version = "0.7.0-rc1" }
 leptos_router = { version = "0.7.0-rc1", features = ["nightly"] }
+reqwest = { version = "0.12.9", features = ["json"] }
 serde = { version = "1.0.214", features = ["derive"] }
 sqlx = { version = "0.8.2", features = ["runtime-tokio-rustls", "postgres"], optional = true }
 thiserror = "1"
