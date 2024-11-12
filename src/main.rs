@@ -3,7 +3,7 @@
 async fn main() -> Result<(), sqlx::Error> {
     use leptos::logging::log;
     use leptos::prelude::*;
-    use librero::router::create_router;
+    use librero::router::router;
     use sqlx::postgres::PgPoolOptions;
 
     // get settings from Cargo.toml
@@ -23,7 +23,7 @@ async fn main() -> Result<(), sqlx::Error> {
     sqlx::migrate!("./migrations").run(&pool).await?;
 
     // app setup
-    let app = create_router(pool, leptos_options);
+    let app = router(pool, leptos_options);
 
     // run our app with hyper
     // `axum::Server` is a re-export of `hyper::Server`
