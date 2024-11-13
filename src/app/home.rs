@@ -1,5 +1,6 @@
-use leptos::{logging, prelude::*, task::spawn_local};
+use leptos::{prelude::*, task::spawn_local};
 use leptos_use::signal_debounced;
+use reqwest::Url;
 use serde::{Deserialize, Serialize};
 
 #[component]
@@ -10,7 +11,7 @@ pub fn HomePage() -> impl IntoView {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 struct OpenLibraryBook {
     title: String,
 }
@@ -20,34 +21,24 @@ struct OpenLibrarySearchResult {
     docs: Vec<OpenLibraryBook>,
 }
 
-const SEARCH_URL_BASE: &'static str = "https://openlibrary.org/search.json?q=";
+const SEARCH_URL_BASE: &'static str = "https://openlibrary.org/search.json";
 
-// TODO: put this back in the other function
-async fn search_helper(url: String) -> OpenLibrarySearchResult {
-    reqwest::get(url)
-        .await
-        .unwrap()
+async fn search_books(search: String) -> Result<Vec<OpenLibraryBook>, reqwest::Error> {
+    let url = Url::parse(&SEARCH_URL_BASE)
+        .expect("base url should be parseable")
+        .query_pairs_mut()
+        .append_pair("q", &search)
+        .append_pair("limit", "5")
+        .finish()
+        .clone();
+
+    let books = reqwest::get(url)
+        .await?
         .json::<OpenLibrarySearchResult>()
-        .await
-        .unwrap()
-}
+        .await?
+        .docs;
 
-// TODO: should return errors
-async fn search_books(search: String) -> Vec<String> {
-    let url = {
-        // TODO: better way to do this?
-        let encoded_search = search.replace(' ', "+");
-        logging::log!("Searching for: {encoded_search}");
-        format!("{SEARCH_URL_BASE}{encoded_search}&limit=5")
-    };
-
-    let books = search_helper(url).await;
-
-    let titles = books.docs.into_iter().map(|book| book.title).collect();
-
-    // logging::log!("Result: {titles:?}");
-
-    titles
+    Ok(books)
 }
 
 #[component]
@@ -63,8 +54,10 @@ pub fn BookSearch() -> impl IntoView {
             set_results(Vec::new());
         } else {
             spawn_local(async move {
-                let results = search_books(term).await;
-                set_results(results);
+                // TODO: error handling?
+                if let Ok(results) = search_books(term).await {
+                    set_results(results);
+                }
             })
         }
     });
@@ -72,8 +65,8 @@ pub fn BookSearch() -> impl IntoView {
     view! {
         <input bind:value=(search, set_search) />
         <ul>
-            <For each=results key=|book_title| book_title.clone() let:book_title>
-                <li>{book_title}</li>
+            <For each=results key=|book| book.title.clone() let:book>
+                <li>{book.title}</li>
             </For>
         </ul>
     }
