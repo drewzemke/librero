@@ -6,6 +6,7 @@ use leptos_router::{
     StaticSegment,
 };
 
+pub mod book_search;
 pub mod home;
 
 pub fn shell(options: LeptosOptions) -> impl IntoView {
