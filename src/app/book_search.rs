@@ -56,9 +56,12 @@ pub fn BookSearch() -> impl IntoView {
                             books
                                 .iter()
                                 .map(move |book| {
+                                    let title = book.title.clone();
                                     let isbn = book.isbn.clone();
                                     view! {
-                                        <li>
+                                        <li aria_label=move || {
+                                            title.clone()
+                                        }>
                                             {book.title.clone()}" by "{book.author_name.clone()}
                                             <img src=move || {
                                                 format!(
@@ -79,7 +82,11 @@ pub fn BookSearch() -> impl IntoView {
     };
 
     view! {
-        <input bind:value=(search, set_search) placeholder="Search by title, author, ISBN" />
+        <input
+            type="search"
+            bind:value=(search, set_search)
+            placeholder="Search by title, author, ISBN"
+        />
         <Show when=move || !debounced_search().is_empty()>
             <Suspense fallback=move || {
                 view! { <p>"Searching..."</p> }

@@ -20,7 +20,7 @@ export const test = base.extend<Fixtures>({
       data: { testId },
     });
 
-    // TODO: get type from API deefs
+    // TODO: get type from API defs?
     const { clientPort } = (await response.json()) as { clientPort: string };
 
     // use in tests

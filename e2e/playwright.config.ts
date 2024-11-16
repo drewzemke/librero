@@ -21,14 +21,14 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: [["list"], ["html", { open: "never" }]],
   timeout: 5000,
-  use: { trace: "on-first-retry" },
+
+  use: { screenshot: "only-on-failure", trace: "on-first-retry" },
 
   projects: [
     {
       name: "Chromium",
       use: { ...devices["Desktop Chrome"] },
     },
-
     {
       name: "Mobile Safari",
       use: { ...devices["iPhone 12"] },
