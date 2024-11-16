@@ -1,52 +1,7 @@
+use crate::model::{book::Book, open_library::OpenLibrarySearchResult};
 use leptos::{either::Either, prelude::*};
 use leptos_use::signal_debounced;
 use reqwest::Url;
-use serde::{Deserialize, Serialize};
-
-#[derive(Debug, Serialize, Deserialize)]
-struct OpenLibrarySearchResult {
-    docs: Vec<OpenLibraryBook>,
-}
-
-#[derive(Debug, Default, Clone, Serialize, Deserialize)]
-#[serde(default)]
-struct OpenLibraryBook {
-    title: String,
-    author_name: Option<Vec<String>>,
-    author_key: Option<Vec<String>>,
-    isbn: Option<Vec<String>>,
-}
-
-#[derive(Debug, Default, Clone, Serialize, Deserialize)]
-struct Book {
-    title: String,
-    author_name: String,
-    author_key: String,
-    isbn: String,
-}
-
-impl TryFrom<OpenLibraryBook> for Book {
-    type Error = String;
-
-    fn try_from(book: OpenLibraryBook) -> Result<Self, Self::Error> {
-        let extract_first_value = |list_opt: Option<Vec<_>>, error_msg: &str| {
-            list_opt
-                .and_then(|list| list.into_iter().next())
-                .ok_or(String::from(error_msg))
-        };
-
-        let author_name = extract_first_value(book.author_name, "missing author_name")?;
-        let author_key = extract_first_value(book.author_key, "missing author_key")?;
-        let isbn = extract_first_value(book.isbn, "missing isbn")?;
-
-        Ok(Self {
-            title: book.title,
-            author_name,
-            author_key,
-            isbn,
-        })
-    }
-}
 
 const SEARCH_URL_BASE: &'static str = "https://openlibrary.org/search.json";
 
