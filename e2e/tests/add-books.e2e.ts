@@ -18,14 +18,14 @@ test("seach for and add a book to collection", async ({ page, clientPort }) => {
   });
 
   await page.goto(`http://localhost:${clientPort}/`);
-
   await expect(page.getByRole("heading", { name: "Librero" })).toBeVisible();
 
   await page.getByRole("searchbox").fill("Test Book");
 
   const searchResult = page.getByRole("listitem", { name: /Test Book/ });
-  await expect(searchResult).toBeVisible();
+  await searchResult.getByRole("button", { name: "Add" }).click();
 
-  // TODO:
-  // await searchResult.getByRole("button", { name: "Add Book" }).click();
+  const recentAdditions = page.getByRole("list", { name: "Recent Additions" });
+  await expect(recentAdditions.getByRole("listitem", { name: "Test Book" }))
+    .toBeVisible();
 });

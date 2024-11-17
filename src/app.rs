@@ -8,6 +8,7 @@ use leptos_router::{
 
 pub mod book_search;
 pub mod home;
+pub mod recent_additions;
 
 pub fn shell(options: LeptosOptions) -> impl IntoView {
     view! {

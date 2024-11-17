@@ -1,3 +1,4 @@
+use super::home::AddBook;
 use crate::model::{book::Book, open_library::OpenLibrarySearchResult};
 use leptos::{either::Either, prelude::*};
 use leptos_use::signal_debounced;
@@ -37,7 +38,7 @@ async fn search_books(search: String) -> Result<Vec<Book>, String> {
 }
 
 #[component]
-pub fn BookSearch() -> impl IntoView {
+pub fn BookSearch(#[prop(into)] add_book: ServerAction<AddBook>) -> impl IntoView {
     let (search, set_search) = signal(String::new());
     let debounced_search: Signal<String> = signal_debounced(search, 500.0);
 
@@ -57,17 +58,21 @@ pub fn BookSearch() -> impl IntoView {
                                 .iter()
                                 .map(move |book| {
                                     let title = book.title.clone();
-                                    let isbn = book.isbn.clone();
+                                    let book = book.clone();
                                     view! {
                                         <li aria_label=move || {
                                             title.clone()
                                         }>
                                             {book.title.clone()}" by "{book.author_name.clone()}
-                                            <img src=move || {
-                                                format!(
-                                                    "https://covers.openlibrary.org/b/isbn/{isbn}-S.jpg",
-                                                )
-                                            } />
+                                            // <img src=move || {
+                                            // format!(
+                                            // "https://covers.openlibrary.org/b/isbn/{isbn}-S.jpg",
+                                            // )
+                                            // } />
+                                            <button on:click=move |_| {
+                                                add_book.dispatch(AddBook { book: book.clone() });
+                                                set_search(String::new());
+                                            }>Add</button>
                                         </li>
                                     }
                                 })

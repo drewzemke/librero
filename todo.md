@@ -1,14 +1,14 @@
 # todo
 
-## set up tracing 
-- [x] print better server logs 
-- [ ] remove `println!` logs
-
 ## user scenarios
 - [ ] add a book
+  - [x] by searching
   - [x] with just a button
-  - [ ] by entering isbn
-  - [ ] by searching
 
-  
+## set up tracing 
+- [ ] print better server logs 
+- [ ] remove `println!` logs
+
+## testing
+- [ ] try refactoring to use `sqlx::test`?
 
