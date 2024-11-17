@@ -104,14 +104,15 @@ async fn teardown_test(
     println!("Tearing down test for ID: {}", body.test_id);
 
     println!("Telling server to shutdown");
-    let _ = run_data.kill_server.send(());
+    run_data.kill_server.send(()).unwrap();
 
     println!("Waiting for server to gracefully shutdown");
-    let _ = run_data.server_handle.await;
+    run_data.server_handle.await.unwrap();
 
     println!("Dropping test db");
-    drop_test_database(body.test_id, state.pool).await;
+    drop_test_database(body.test_id.clone(), state.pool).await;
 
+    println!("Done tearing down {}", body.test_id);
     Json(TestResponse { client_port: 0 })
 }
 
@@ -141,7 +142,7 @@ async fn drop_test_database(test_id: String, pool: PgPool) {
     let db_id = test_id.replace("-", "");
     let db_name = format!("librero_{}", db_id);
 
-    sqlx::query(&format!("DROP DATABASE {}", db_name))
+    sqlx::query(&format!("DROP DATABASE {} WITH (FORCE)", db_name))
         .execute(&pool)
         .await
         .unwrap();
