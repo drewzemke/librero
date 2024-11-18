@@ -10,7 +10,12 @@ async fn get_recent_books() -> Result<Vec<Book>, ServerFnError> {
 
     let books = sqlx::query_as!(
         Book,
-        "SELECT isbn, title, author_name, author_key FROM books",
+        r#"
+            SELECT isbn, title, author_name, author_key 
+            FROM books
+            ORDER BY created_at DESC
+            LIMIT 5
+        "#
     )
     .fetch_all(&pool)
     .await

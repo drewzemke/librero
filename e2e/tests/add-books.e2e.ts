@@ -1,7 +1,7 @@
 import { expect } from "@playwright/test";
 import { test } from "../utils/test-fixtures.ts";
 
-test("seach for and add a book to collection", async ({ page, clientPort }) => {
+test("add a book to collection", async ({ page, clientPort }) => {
   await page.route(/openlibrary/, (route) => {
     // TODO: try using `schemars` and `json-schema-to-typescript`
     // make this mock more strongly-typed

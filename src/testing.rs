@@ -58,7 +58,7 @@ async fn setup_test(
     println!("Setting up test for ID: {}", body.test_id);
 
     // make a bespoke db for this test
-    let (test_pool, db_name) = create_test_database(body.test_id.clone(), state.pool).await;
+    let (test_pool, db_name) = create_test_database(body.test_id.clone(), state.pool, true).await;
     println!("Created this db: {db_name}");
 
     // spin up the server
@@ -116,7 +116,7 @@ async fn teardown_test(
     Json(TestResponse { client_port: 0 })
 }
 
-async fn create_test_database(test_id: String, pool: PgPool) -> (PgPool, String) {
+async fn create_test_database(test_id: String, pool: PgPool, fixtures: bool) -> (PgPool, String) {
     let db_id = test_id.replace("-", "");
     let db_name = format!("librero_{}", db_id);
 
@@ -134,6 +134,13 @@ async fn create_test_database(test_id: String, pool: PgPool) -> (PgPool, String)
         .run(&test_pool)
         .await
         .expect("Failed to migrate the database");
+
+    if fixtures {
+        sqlx::query_file!("fixtures/books.sql")
+            .execute(&test_pool)
+            .await
+            .expect("Failed to add fixtures to the database");
+    }
 
     (test_pool, db_name)
 }
