@@ -1,10 +1,8 @@
 use crate::model::book::Book;
 use leptos::{either::Either, prelude::*};
 
-use super::home::AddBook;
-
-#[server(GetRecentBooks)]
-async fn get_recent_books() -> Result<Vec<Book>, ServerFnError> {
+#[server(GetFeaturedBooks)]
+async fn get_featured_books() -> Result<Vec<Book>, ServerFnError> {
     use sqlx::PgPool;
     let pool = expect_context::<PgPool>();
 
@@ -13,8 +11,8 @@ async fn get_recent_books() -> Result<Vec<Book>, ServerFnError> {
         r#"
             SELECT isbn, title, author_name, author_key 
             FROM books
-            ORDER BY created_at DESC
-            LIMIT 5
+            ORDER BY RANDOM()
+            LIMIT 3
         "#
     )
     .fetch_all(&pool)
@@ -25,12 +23,12 @@ async fn get_recent_books() -> Result<Vec<Book>, ServerFnError> {
 }
 
 #[component]
-pub fn RecentAdditions(#[prop(into)] add_book: ServerAction<AddBook>) -> impl IntoView {
-    let recent_books = Resource::new(move || add_book.version().get(), |_| get_recent_books());
+pub fn FeaturedBooks() -> impl IntoView {
+    let featured_books = Resource::new(move || {}, |_| get_featured_books());
 
     let books = move || {
         Suspend::new(async move {
-            recent_books.await.map(|books| {
+            featured_books.await.map(|books| {
                 if books.is_empty() {
                     Either::Left(view! { <p>{"You don't have any books. Add one!"}</p> })
                 } else {
@@ -49,9 +47,9 @@ pub fn RecentAdditions(#[prop(into)] add_book: ServerAction<AddBook>) -> impl In
     };
 
     view! {
-        <h2>"Recent Additions"</h2>
+        <h2>"Featured Books"</h2>
         <Transition fallback=|| view! { <p>"Loading..."</p> }>
-            <ol aria_label="Recent Additions">{books}</ol>
+            <ol aria_label="Featured Books">{books}</ol>
         </Transition>
     }
 }

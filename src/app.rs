@@ -7,6 +7,7 @@ use leptos_router::{
 };
 
 pub mod book_search;
+pub mod featured_books;
 pub mod home;
 pub mod recent_additions;
 

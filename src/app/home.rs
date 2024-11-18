@@ -1,5 +1,7 @@
 use crate::{
-    app::{book_search::BookSearch, recent_additions::RecentAdditions},
+    app::{
+        book_search::BookSearch, featured_books::FeaturedBooks, recent_additions::RecentAdditions,
+    },
     model::book::Book,
 };
 use leptos::prelude::*;
@@ -12,7 +14,11 @@ async fn add_book(book: Book) -> Result<(), ServerFnError> {
 
     sqlx::query_as!(
         TodoV2,
-        "INSERT INTO books (isbn, title, author_name, author_key) VALUES ($1, $2, $3, $4)",
+        r#"
+            INSERT 
+            INTO books (isbn, title, author_name, author_key) 
+            VALUES ($1, $2, $3, $4)            
+        "#,
         book.isbn,
         book.title,
         book.author_name,
@@ -31,6 +37,7 @@ pub fn HomePage() -> impl IntoView {
 
     view! {
         <h1 class="text-2xl font-medium">"Librero"</h1>
+        <FeaturedBooks />
         <BookSearch add_book=add_book />
         <RecentAdditions add_book=add_book />
     }
