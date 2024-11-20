@@ -1,4 +1,10 @@
-use crate::model::book::Book;
+use crate::{
+    app::{
+        book_list::{BookList, BookListItem},
+        section_card::SectionCard,
+    },
+    model::book::Book,
+};
 use leptos::{either::Either, prelude::*};
 
 #[server(GetFeaturedBooks)]
@@ -12,7 +18,7 @@ async fn get_featured_books() -> Result<Vec<Book>, ServerFnError> {
             SELECT isbn, title, author_name, author_key 
             FROM books
             ORDER BY RANDOM()
-            LIMIT 3
+            LIMIT 4
         "#
     )
     .fetch_all(&pool)
@@ -34,10 +40,9 @@ pub fn FeaturedBooks() -> impl IntoView {
                 } else {
                     Either::Right(
                         books
-                            .iter()
+                            .into_iter()
                             .map(move |book| {
-                                let title = book.title.clone();
-                                view! { <li aria_label=move || title.clone()>{title.clone()}</li> }
+                                view! { <BookListItem book=book /> }
                             })
                             .collect::<Vec<_>>(),
                     )
@@ -47,9 +52,10 @@ pub fn FeaturedBooks() -> impl IntoView {
     };
 
     view! {
-        <h2>"Featured Books"</h2>
-        <Transition fallback=|| view! { <p>"Loading..."</p> }>
-            <ol aria_label="Featured Books">{books}</ol>
-        </Transition>
+        <SectionCard title="Featured Books">
+            <Transition fallback=|| view! { <p>"Loading..."</p> }>
+                <BookList title="Featured Books">{books}</BookList>
+            </Transition>
+        </SectionCard>
     }
 }

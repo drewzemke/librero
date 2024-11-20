@@ -1,3 +1,4 @@
+use header::Header;
 use home::HomePage;
 use leptos::prelude::*;
 use leptos_meta::{provide_meta_context, MetaTags, Stylesheet, Title};
@@ -6,10 +7,13 @@ use leptos_router::{
     StaticSegment,
 };
 
+pub mod book_list;
 pub mod book_search;
 pub mod featured_books;
+pub mod header;
 pub mod home;
 pub mod recent_additions;
+pub mod section_card;
 
 pub fn shell(options: LeptosOptions) -> impl IntoView {
     view! {
@@ -22,7 +26,9 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
                 <HydrationScripts options />
                 <MetaTags />
             </head>
-            <body>
+            <body class="font-inter overflow-hidden
+            bg-gradient-to-t from-brown-800 to-brown-500 text-stone-900
+            dark:from-slate-950 dark:to-indigo-950 dark:text-slate-200">
                 <App />
             </body>
         </html>
@@ -44,7 +50,8 @@ pub fn App() -> impl IntoView {
 
         // content for this welcome page
         <Router>
-            <main>
+            <Header />
+            <main class="w-full h-screen pt-14 overflow-y-auto">
                 <Routes fallback=|| "Page not found.".into_view()>
                     <Route path=StaticSegment("") view=HomePage />
                 </Routes>

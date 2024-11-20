@@ -36,7 +36,6 @@ pub fn HomePage() -> impl IntoView {
     let add_book = ServerAction::<AddBook>::new();
 
     view! {
-        <h1 class="text-2xl font-medium">"Librero"</h1>
         <FeaturedBooks />
         <BookSearch add_book=add_book />
         <RecentAdditions add_book=add_book />

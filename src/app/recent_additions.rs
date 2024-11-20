@@ -1,4 +1,10 @@
-use crate::model::book::Book;
+use crate::{
+    app::{
+        book_list::{BookList, BookListItem},
+        section_card::SectionCard,
+    },
+    model::book::Book,
+};
 use leptos::{either::Either, prelude::*};
 
 use super::home::AddBook;
@@ -14,7 +20,7 @@ async fn get_recent_books() -> Result<Vec<Book>, ServerFnError> {
             SELECT isbn, title, author_name, author_key 
             FROM books
             ORDER BY created_at DESC
-            LIMIT 5
+            LIMIT 4
         "#
     )
     .fetch_all(&pool)
@@ -36,10 +42,9 @@ pub fn RecentAdditions(#[prop(into)] add_book: ServerAction<AddBook>) -> impl In
                 } else {
                     Either::Right(
                         books
-                            .iter()
+                            .into_iter()
                             .map(move |book| {
-                                let title = book.title.clone();
-                                view! { <li aria_label=move || title.clone()>{title.clone()}</li> }
+                                view! { <BookListItem book=book /> }
                             })
                             .collect::<Vec<_>>(),
                     )
@@ -49,9 +54,10 @@ pub fn RecentAdditions(#[prop(into)] add_book: ServerAction<AddBook>) -> impl In
     };
 
     view! {
-        <h2>"Recent Additions"</h2>
-        <Transition fallback=|| view! { <p>"Loading..."</p> }>
-            <ol aria_label="Recent Additions">{books}</ol>
-        </Transition>
+        <SectionCard title="Recent Additions">
+            <Transition fallback=|| view! { <p>"Loading..."</p> }>
+                <BookList title="Recent Additions">{books}</BookList>
+            </Transition>
+        </SectionCard>
     }
 }
