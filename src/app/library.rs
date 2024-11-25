@@ -32,11 +32,30 @@ async fn get_library_books() -> Result<Vec<Book>, ServerFnError> {
 #[component]
 pub fn Library() -> impl IntoView {
     let add_book = ServerAction::<AddBook>::new();
-
     let library_books = Resource::new(move || add_book.version().get(), |_| get_library_books());
 
+    let (show_add_form, set_show_add_form) = signal(false);
+
+    let handle_add_book = move |book: Book| {
+        add_book.dispatch(AddBook { book });
+        set_show_add_form(false);
+    };
+
     view! {
-        <BookSearch add_book=add_book />
+        <button
+            on:click=move |_| set_show_add_form(true)
+            aria_label="Add Book"
+            class="absolute right-10 bottom-10 size-16
+            flex justify-center items-center 
+            rounded-full bg-yellow-500"
+        >
+            <span class="text-4xl text-slate-950">+</span>
+        </button>
+
+        <Show when=show_add_form>
+            <BookSearch on_add=Callback::new(handle_add_book) />
+        </Show>
+
         <SectionCard title="My Books">
             <BookList title="My Books" resource=library_books />
         </SectionCard>

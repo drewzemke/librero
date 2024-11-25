@@ -62,11 +62,16 @@ async fn search_books(search: String) -> Result<Vec<Book>, String> {
 }
 
 #[component]
-pub fn BookSearch(#[prop(into)] add_book: ServerAction<AddBook>) -> impl IntoView {
+pub fn BookSearch(#[prop(into)] on_add: Callback<Book>) -> impl IntoView {
     let (search, set_search) = signal(String::new());
     let debounced_search: Signal<String> = signal_debounced(search, 500.0);
 
     let results = LocalResource::new(move || search_books(debounced_search.get()));
+
+    let handle_book_select = move |book: Book| {
+        on_add.run(book);
+        set_search(String::new());
+    };
 
     // FIXME: why can't the return typ be `Suspend<Result<...>>`?
     // (that won't work here for some reason)
@@ -79,26 +84,9 @@ pub fn BookSearch(#[prop(into)] add_book: ServerAction<AddBook>) -> impl IntoVie
                     } else {
                         Either::Right(
                             books
-                                .iter()
+                                .into_iter()
                                 .map(move |book| {
-                                    let title = book.title.clone();
-                                    let book = book.clone();
-                                    view! {
-                                        <li aria_label=move || {
-                                            title.clone()
-                                        }>
-                                            {book.title.clone()}" by "{book.author_name.clone()}
-                                            // <img src=move || {
-                                            // format!(
-                                            // "https://covers.openlibrary.org/b/isbn/{isbn}-S.jpg",
-                                            // )
-                                            // } />
-                                            <button on:click=move |_| {
-                                                add_book.dispatch(AddBook { book: book.clone() });
-                                                set_search(String::new());
-                                            }>Add</button>
-                                        </li>
-                                    }
+                                    view! { <BookSearchItem book=book on_select=Callback::new(handle_book_select) /> }
                                 })
                                 .collect::<Vec<_>>(),
                         )
@@ -123,5 +111,28 @@ pub fn BookSearch(#[prop(into)] add_book: ServerAction<AddBook>) -> impl IntoVie
                 <ul>{book_list}</ul>
             </Suspense>
         </Show>
+    }
+}
+
+#[component]
+fn BookSearchItem(book: Book, #[prop(into)] on_select: Callback<Book>) -> impl IntoView {
+    let title = book.title.clone();
+    let author = book.author_name.clone();
+    let isbn = book.isbn.clone();
+    view! {
+        <li
+            class="py-2 text-sm flex flex-col items-center max-w-36"
+            aria_label=move || title.clone()
+        >
+            <img
+                class="mb-2 aspect-square h-52 border rounded-md border-stone-600 dark:border-slate-300"
+                src=move || {
+                    format!("https://covers.openlibrary.org/b/isbn/{}-M.jpg", isbn.clone())
+                }
+            />
+            <span class="text-center">{title.clone()}</span>
+            <span class="text-center text-stone-600 dark:text-slate-400">{author.clone()}</span>
+            <button on:click=move |_| on_select.run(book.clone())>Add</button>
+        </li>
     }
 }
