@@ -6,12 +6,14 @@ use leptos_router::{
     components::{Route, Router, Routes},
     StaticSegment,
 };
+use library::Library;
 
 pub mod book_list;
 pub mod book_search;
 pub mod featured_books;
 pub mod header;
 pub mod home;
+pub mod library;
 pub mod recent_additions;
 pub mod section_card;
 
@@ -53,6 +55,7 @@ pub fn App() -> impl IntoView {
             <Header />
             <main class="w-full h-screen pt-14 overflow-y-auto">
                 <Routes fallback=|| "Page not found.".into_view()>
+                    <Route path=StaticSegment("library") view=Library />
                     <Route path=StaticSegment("") view=HomePage />
                 </Routes>
             </main>

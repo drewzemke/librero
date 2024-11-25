@@ -1,14 +1,15 @@
 use crate::{
     app::{
         book_list::{BookList, BookListItem},
+        book_search::{AddBook, BookSearch},
         section_card::SectionCard,
     },
     model::book::Book,
 };
 use leptos::{either::Either, prelude::*};
 
-#[server(GetRecentBooks)]
-async fn get_recent_books() -> Result<Vec<Book>, ServerFnError> {
+#[server(GetLibraryBooks)]
+async fn get_library_books() -> Result<Vec<Book>, ServerFnError> {
     use sqlx::PgPool;
     let pool = expect_context::<PgPool>();
 
@@ -18,7 +19,7 @@ async fn get_recent_books() -> Result<Vec<Book>, ServerFnError> {
             SELECT isbn, title, author_name, author_key 
             FROM books
             ORDER BY created_at DESC
-            LIMIT 4
+            LIMIT 10
         "#
     )
     .fetch_all(&pool)
@@ -29,12 +30,14 @@ async fn get_recent_books() -> Result<Vec<Book>, ServerFnError> {
 }
 
 #[component]
-pub fn RecentAdditions() -> impl IntoView {
-    let recent_books = Resource::new(move || {}, |_| get_recent_books());
+pub fn Library() -> impl IntoView {
+    let add_book = ServerAction::<AddBook>::new();
+
+    let library_books = Resource::new(move || add_book.version().get(), |_| get_library_books());
 
     let books = move || {
         Suspend::new(async move {
-            recent_books.await.map(|books| {
+            library_books.await.map(|books| {
                 if books.is_empty() {
                     Either::Left(view! { <p>{"You don't have any books. Add one!"}</p> })
                 } else {
@@ -52,9 +55,10 @@ pub fn RecentAdditions() -> impl IntoView {
     };
 
     view! {
-        <SectionCard title="Recent Additions">
+        <BookSearch add_book=add_book />
+        <SectionCard title="My Books">
             <Transition fallback=|| view! { <p>"Loading..."</p> }>
-                <BookList title="Recent Additions">{books}</BookList>
+                <BookList title="My Books">{books}</BookList>
             </Transition>
         </SectionCard>
     }

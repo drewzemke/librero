@@ -1,8 +1,32 @@
-use super::home::AddBook;
 use crate::model::{book::Book, open_library::OpenLibrarySearchResult};
 use leptos::{either::Either, prelude::*};
 use leptos_use::signal_debounced;
 use reqwest::Url;
+
+#[server(AddBook)]
+async fn add_book(book: Book) -> Result<(), ServerFnError> {
+    use sqlx::PgPool;
+
+    let pool = expect_context::<PgPool>();
+
+    sqlx::query_as!(
+        TodoV2,
+        r#"
+            INSERT 
+            INTO books (isbn, title, author_name, author_key) 
+            VALUES ($1, $2, $3, $4)            
+        "#,
+        book.isbn,
+        book.title,
+        book.author_name,
+        book.author_key
+    )
+    .fetch_all(&pool)
+    .await
+    .map_err(|e| ServerFnError::<sqlx::Error>::ServerError(e.to_string()))?;
+
+    Ok(())
+}
 
 const SEARCH_URL_BASE: &'static str = "https://openlibrary.org/search.json";
 
