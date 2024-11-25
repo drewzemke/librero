@@ -1,11 +1,8 @@
 use crate::{
-    app::{
-        book_list::{BookList, BookListItem},
-        section_card::SectionCard,
-    },
+    app::{book_list::BookList, section_card::SectionCard},
     model::book::Book,
 };
-use leptos::{either::Either, prelude::*};
+use leptos::prelude::*;
 
 #[server(GetRecentBooks)]
 async fn get_recent_books() -> Result<Vec<Book>, ServerFnError> {
@@ -32,30 +29,9 @@ async fn get_recent_books() -> Result<Vec<Book>, ServerFnError> {
 pub fn RecentAdditions() -> impl IntoView {
     let recent_books = Resource::new(move || {}, |_| get_recent_books());
 
-    let books = move || {
-        Suspend::new(async move {
-            recent_books.await.map(|books| {
-                if books.is_empty() {
-                    Either::Left(view! { <p>{"You don't have any books. Add one!"}</p> })
-                } else {
-                    Either::Right(
-                        books
-                            .into_iter()
-                            .map(move |book| {
-                                view! { <BookListItem book=book /> }
-                            })
-                            .collect::<Vec<_>>(),
-                    )
-                }
-            })
-        })
-    };
-
     view! {
         <SectionCard title="Recent Additions">
-            <Transition fallback=|| view! { <p>"Loading..."</p> }>
-                <BookList title="Recent Additions">{books}</BookList>
-            </Transition>
+            <BookList title="Recent Additions" resource=recent_books />
         </SectionCard>
     }
 }

@@ -1,12 +1,12 @@
 use crate::{
     app::{
-        book_list::{BookList, BookListItem},
+        book_list::BookList,
         book_search::{AddBook, BookSearch},
         section_card::SectionCard,
     },
     model::book::Book,
 };
-use leptos::{either::Either, prelude::*};
+use leptos::prelude::*;
 
 #[server(GetLibraryBooks)]
 async fn get_library_books() -> Result<Vec<Book>, ServerFnError> {
@@ -35,31 +35,10 @@ pub fn Library() -> impl IntoView {
 
     let library_books = Resource::new(move || add_book.version().get(), |_| get_library_books());
 
-    let books = move || {
-        Suspend::new(async move {
-            library_books.await.map(|books| {
-                if books.is_empty() {
-                    Either::Left(view! { <p>{"You don't have any books. Add one!"}</p> })
-                } else {
-                    Either::Right(
-                        books
-                            .into_iter()
-                            .map(move |book| {
-                                view! { <BookListItem book=book /> }
-                            })
-                            .collect::<Vec<_>>(),
-                    )
-                }
-            })
-        })
-    };
-
     view! {
         <BookSearch add_book=add_book />
         <SectionCard title="My Books">
-            <Transition fallback=|| view! { <p>"Loading..."</p> }>
-                <BookList title="My Books">{books}</BookList>
-            </Transition>
+            <BookList title="My Books" resource=library_books />
         </SectionCard>
     }
 }

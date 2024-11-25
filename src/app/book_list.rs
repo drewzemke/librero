@@ -1,17 +1,41 @@
 use crate::model::book::Book;
-use leptos::prelude::*;
+use leptos::{either::Either, prelude::*};
 
 #[component]
-pub fn BookList(title: &'static str, children: Children) -> impl IntoView {
+pub fn BookList(
+    title: &'static str,
+    #[prop(into)] resource: Resource<Result<Vec<Book>, ServerFnError>>,
+) -> impl IntoView {
+    let books = move || {
+        Suspend::new(async move {
+            resource.await.map(|books| {
+                if books.is_empty() {
+                    Either::Left(view! { <p>{"No books found."}</p> })
+                } else {
+                    Either::Right(
+                        books
+                            .into_iter()
+                            .map(move |book| {
+                                view! { <BookListItem book=book /> }
+                            })
+                            .collect::<Vec<_>>(),
+                    )
+                }
+            })
+        })
+    };
+
     view! {
-        <ol aria_label=title class="flex flex-wrap gap-4 justify-center">
-            {children()}
-        </ol>
+        <Transition fallback=|| view! { <p>"Loading..."</p> }>
+            <ol aria_label=title class="flex flex-wrap gap-4 justify-center">
+                {books}
+            </ol>
+        </Transition>
     }
 }
 
 #[component]
-pub fn BookListItem(book: Book) -> impl IntoView {
+fn BookListItem(book: Book) -> impl IntoView {
     let title = book.title.clone();
     let author = book.author_name.clone();
     view! {
